@@ -14,11 +14,11 @@ enum user_rgb_mode {
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-    [0] = LAYOUT(QK_GESC, KC_1, KC_2, KC_3, KC_4, KC_5,                         KC_MPLY, KC_MPLY,           KC_6, KC_7, KC_8, KC_9, KC_0, LT(3,KC_EQL),
-                 LT(2, KC_TAB), KC_Q, KC_W, KC_E, KC_R, KC_T,                                                      KC_Y, KC_U, KC_I, KC_O, KC_P, LT(2,KC_MINS),
-                 LT(1, KC_CAPS), KC_A, KC_S, KC_D, KC_F, KC_G,                                                       KC_H, KC_J, KC_K, KC_L, KC_SCLN, KC_QUOT,
-                 KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B,                         KC_DOWN, KC_UP,             KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH, KC_RSFT,
-                 KC_LGUI, LCTL_T(KC_ENT), LALT_T(KC_HOME),                  LT(1,KC_SPC),LT(1,KC_SPC),      RALT_T(KC_END), RCTL_T(KC_ENT), RGUI_T(KC_BSPC)
+    [0] = LAYOUT(QK_GESC,        KC_1,    KC_2, KC_3, KC_4, KC_5,                      KC_MPLY, KC_MPLY,           KC_6, KC_7, KC_8,    KC_9,   KC_0,    LT(3,KC_EQL),
+                 LT(2, KC_TAB),  KC_Q,    KC_W, KC_E, KC_R, KC_T,                                                  KC_Y, KC_U, KC_I,    KC_O,   KC_P,    LT(2,KC_MINS),
+                 LT(1, KC_CAPS), KC_A,    KC_S, KC_D, KC_F, KC_G,                                                  KC_H, KC_J, KC_K,    KC_L,   KC_SCLN, KC_QUOT,
+                 KC_LSFT,        KC_Z,    KC_X, KC_C, KC_V, KC_B,                      KC_DOWN, KC_UP,             KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH, KC_RSFT,
+                                 KC_LCTL, KC_LGUI, KC_LALT,                       LT(1,KC_SPC),LT(1,KC_SPC),       KC_RALT,    KC_RGUI, KC_RCTL
                  ),
 
     [1] = LAYOUT(KC_TRNS, KC_LBRC, KC_RBRC, KC_LCBR, KC_RCBR, KC_HOME,      KC_TRNS, KC_TRNS,               KC_HOME, KC_MPRV, KC_MPLY, KC_MFFD, KC_MUTE, KC_BSPC,
@@ -28,7 +28,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                  KC_TRNS, KC_TRNS, KC_TRNS,                                     KC_TRNS, KC_TRNS,           KC_TRNS, KC_TRNS, KC_TRNS
                  ),
 
-    [2] = LAYOUT(KC_TRNS, KC_F1, KC_F2, KC_F3, KC_F4, KC_F5,                    KC_TRNS, KC_TRNS,           KC_TRNS, KC_P7, KC_P8, KC_P9, KC_PPLS, KC_TRNS,
+    [2] = LAYOUT(KC_TRNS, KC_F1, KC_F2, KC_F3, KC_F4, KC_F5,                    KC_TRNS, KC_TRNS,           KC_TRNS, KC_P7, KC_P8, KC_P9, KC_PPLS, KC_DEL,
                  KC_TRNS, KC_F6, KC_F7, KC_F8, KC_F9, KC_F10,                                               KC_TRNS, KC_P4, KC_P5, KC_P6, KC_PMNS, KC_TRNS,
                  KC_TRNS, KC_F11, KC_F12, KC_F13, KC_F14, KC_F15,                                           KC_TRNS, KC_P1, KC_P2, KC_P3, KC_PAST, KC_TRNS,
                  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_PSCR,          KC_CUT, KC_TRNS,            KC_TRNS, KC_TRNS, KC_P0, KC_PDOT, KC_PSLS, KC_TRNS,
@@ -37,10 +37,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [3] = LAYOUT(KC_TRNS, QK_BOOTLOADER, KC_NO, KC_NO, KC_NO, KC_NO,    QK_AUTO_SHIFT_TOGGLE, QK_AUTO_SHIFT_TOGGLE,     KC_NO, KC_NO, KC_NO, KC_NO, QK_BOOTLOADER, KC_TRNS,
                  KC_NO, RGB_HUI, RGB_SAI, RGB_SAI, RGB_VAI, RGB_SPI,                                                    RGB_M_SN, RGB_M_K, RGB_M_X, RGB_M_G, RGB_M_T, KC_TRNS,
                  KC_NO, RGB_HUD, RGB_SAD, RGB_SAD, RGB_VAD, RGB_SPD,                                                    RGB_M_P, RGB_M_B, RGB_M_R, RGB_M_SW, KC_NO, KC_TRNS,
-                 KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,                           RGB_TOG, RGB_TOG,                  KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_TRNS,
-                 KC_TRNS, KC_TRNS, KC_TRNS,                                          RGB_RMOD, RGB_MOD,                 KC_TRNS, KC_TRNS, KC_TRNS
+                 QK_AUTO_SHIFT_TOGGLE, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,       RGB_TOG, RGB_TOG,                       KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, QK_AUTO_SHIFT_TOGGLE,
+                 KC_TRNS, KC_TRNS, KC_TRNS,                                     RGB_RMOD, RGB_MOD,                      KC_TRNS, KC_TRNS, KC_TRNS
                  )
 };
+
 
 #if defined(ENCODER_MAP_ENABLE)
 const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
@@ -56,7 +57,7 @@ static void print_status_narrow(void) {
     // Create OLED content
     oled_write_P(PSTR("\n"), false);
     oled_write_P(PSTR(""), false);
-    oled_write_P(PSTR(" Ranzboard -58-"), false);
+    oled_write_P(PSTR(" Ranzboard"), false);
     oled_write_P(PSTR("\n"), false);
 
     // Print current layer
@@ -80,19 +81,30 @@ static void print_status_narrow(void) {
 
     oled_write_P(PSTR("\n"), false);
     led_t led_usb_state = host_keyboard_led_state();
-    oled_write_ln_P(PSTR("Caps- lock"), led_usb_state.caps_lock);
+    // oled_write_ln_P(PSTR("Caps- lock"), led_usb_state.caps_lock);
+    oled_write_P(PSTR("CL"), led_usb_state.caps_lock);
+    oled_write_P(" ", false);
 
 #ifdef AUTO_SHIFT_ENABLE
 
     bool autoshift = get_autoshift_state();
-    oled_advance_page(true);
-    oled_write_P(PSTR("Auto-Shift"), autoshift);
+    // oled_advance_page(true);
+    // oled_write_P(PSTR("Auto-Shift"), autoshift);
+    oled_write_P(PSTR("AS"), autoshift);
     oled_advance_page(true);
 
 #endif
 
+#ifdef RGB_MATRIX_ENABLE
+    uint8_t mode = rgb_matrix_get_mode();
 
+    // Mode unint8_t to string
+    char mode_str[6];
+    // itoa(mode, mode_str, 10);
+    snprintf(mode_str, sizeof(mode_str), "MT%.2d", mode);
+    oled_write_P(PSTR(mode_str), rgb_matrix_is_enabled());
 }
+#endif
 
 bool oled_task_user(void) {
     // Render the OLED
