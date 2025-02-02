@@ -34,7 +34,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_PSCR,          KC_CUT, KC_TRNS,            KC_TRNS, KC_TRNS, KC_P0, KC_PDOT, KC_PSLS, KC_TRNS,
                  KC_TRNS, KC_TRNS, KC_TRNS,                                     KC_TRNS, KC_TRNS,           KC_TRNS, KC_TRNS, KC_TRNS
                  ),
-    [3] = LAYOUT(KC_TRNS, QK_BOOTLOADER, KC_NO, KC_NO, KC_NO, KC_NO,    QK_AUTO_SHIFT_TOGGLE, QK_AUTO_SHIFT_TOGGLE,     KC_NO, KC_NO, KC_NO, KC_NO, QK_BOOTLOADER, KC_TRNS,
+    [3] = LAYOUT(KC_TRNS, QK_BOOTLOADER, QK_LEAD, KC_NO, KC_NO, KC_NO,    QK_AUTO_SHIFT_TOGGLE, QK_AUTO_SHIFT_TOGGLE,     KC_NO, KC_NO, KC_NO, QK_LEAD, QK_BOOTLOADER, KC_TRNS,
                  KC_NO, RGB_HUI, RGB_SAI, RGB_SAI, RGB_VAI, RGB_SPI,                                                    RGB_M_SN, RGB_M_K, RGB_M_X, RGB_M_G, RGB_M_T, KC_TRNS,
                  KC_NO, RGB_HUD, RGB_SAD, RGB_SAD, RGB_VAD, RGB_SPD,                                                    RGB_M_P, RGB_M_B, RGB_M_R, RGB_M_SW, KC_NO, KC_TRNS,
                  QK_AUTO_SHIFT_TOGGLE, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,       RGB_TOG, RGB_TOG,                       KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, QK_AUTO_SHIFT_TOGGLE,
@@ -91,18 +91,58 @@ static void print_status_narrow(void) {
     // oled_advance_page(true);
     // oled_write_P(PSTR("Auto-Shift"), autoshift);
     oled_write_P(PSTR("AS"), autoshift);
-    oled_advance_page(true);
+    //oled_advance_page(true);
 
+#endif
+
+#ifdef CAPS_WORD_ENABLE
+    oled_write_P(PSTR("CW"), is_caps_word_on());
+    oled_write_P(PSTR(" "), false);
+#endif
+
+#ifdef LEADER_ENABLE
+    oled_write_P(PSTR("L"), leader_sequence_active());
+    oled_advance_page(true);
 #endif
 
 #ifdef RGB_MATRIX_ENABLE
     uint8_t mode = rgb_matrix_get_mode();
 
     // Mode unint8_t to string
-    char mode_str[6];
+    char mode_str[7];
     // itoa(mode, mode_str, 10);
-    snprintf(mode_str, sizeof(mode_str), "MT%.2d", mode);
+    snprintf(mode_str, sizeof(mode_str), "MT %.2d", mode);
     oled_write_P(PSTR(mode_str), rgb_matrix_is_enabled());
+    oled_advance_page(true);
+}
+#endif
+
+#ifdef OS_DETECTION_ENABLE
+bool process_detected_host_os_kb(os_variant_t detected_os) {
+    if (!process_detected_host_os_user(detected_os)) {
+        return false;
+    }
+    switch (detected_os) {
+        case OS_MACOS:
+        case OS_IOS:
+            oled_write_P(PSTR(" Mac "), false);
+            keymap_config.swap_lalt_lgui = true;
+            keymap_config.swap_ralt_rgui = true;
+            rgb_matrix_set_color_all(RGB_WHITE);
+            break;
+        case OS_WINDOWS:
+            oled_write_P(PSTR(" Win "), false);
+            break;
+        case OS_LINUX:
+            oled_write_P(PSTR(" Lin "), false);
+            break;
+        case OS_UNSURE:
+            oled_write_P(PSTR(" OS? "), false);
+            rgb_matrix_set_color_all(RGB_RED);
+            break;
+    }
+
+    return true;
 }
 #endif
 
@@ -115,30 +155,6 @@ bool oled_task_user(void) {
 
 #endif
 
-#ifdef OS_DETECT_ENABLE
-bool process_detected_host_os_kb(os_variant_t detected_os) {
-    if (!process_detected_host_os_user(detected_os)) {
-        return false;
-    }
-    switch (detected_os) {
-        case OS_MACOS:
-        case OS_IOS:
-            rgb_matrix_set_color_all(RGB_WHITE);
-            break;
-        case OS_WINDOWS:
-            rgb_matrix_set_color_all(RGB_BLUE);
-            break;
-        case OS_LINUX:
-            rgb_matrix_set_color_all(RGB_ORANGE);
-            break;
-        case OS_UNSURE:
-            rgb_matrix_set_color_all(RGB_RED);
-            break;
-    }
-
-    return true;
-}
-#endif
 
 
 
@@ -221,3 +237,35 @@ bool rgb_matrix_indicators_kb(void) {
 
     return true;
 }
+
+// Handle leader key presses
+void leader_start_user(void) {
+    // Handle leader key press
+    // Example: Set RGB matrix color
+    rgb_matrix_set_color_all(RGB_GREEN);
+}
+
+void leader_end_user(void) {
+    if(leader_sequence_one_key(KC_A)) {
+        rgb_matrix_set_color_all(RGB_RED);
+        reset_keyboard();
+    }
+}
+
+#ifdef CAPS_WORD_ENABLE
+bool caps_word_press_user(uint16_t keycode) {
+    switch (keycode) {
+        case KC_SPC:
+        case KC_ENT:
+        case KC_ESC:
+        case KC_TAB:
+        case KC_LSFT:
+        case KC_RSFT:
+            return false;
+        default:
+            add_weak_mods(MOD_BIT(KC_LSFT));
+            return true;
+    }
+}
+#endif
+
